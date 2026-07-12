@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+export async function GET(){return NextResponse.json({ok:true,provider:"openrouter",configured:Boolean(process.env.OPENROUTER_API_KEY)})}
 const fail = (error_code: string, detail: string, status = 500, extra: Record<string, unknown> = {}) => NextResponse.json({ ok: false, error_code, detail, ...extra }, { status });
 export async function POST(req: Request) {
   try {
@@ -24,3 +25,4 @@ export async function POST(req: Request) {
     try { return NextResponse.json(JSON.parse(match[0])); } catch { return fail("AI_INVALID_JSON", "JSON object from provider could not be parsed", 502, { provider_text: match[0].slice(0, 500) }); }
   } catch (error) { return fail("ANALYZE_UNHANDLED", error instanceof Error ? error.message : String(error), 500); }
 }
+
