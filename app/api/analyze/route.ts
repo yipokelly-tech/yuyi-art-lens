@@ -14,10 +14,11 @@ export async function POST(req: Request) {
     const json = await response.json();
     const text = json?.choices?.[0]?.message?.content || "";
     const clean = String(text).replace(/```json|```/g, "").trim();
-    return NextResponse.json(JSON.parse(clean));
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (!match) return NextResponse.json({ error: "AI_INVALID_RESPONSE" }, { status: 502 });
+    try { return NextResponse.json(JSON.parse(match[0])); } catch { return NextResponse.json({ error: "AI_INVALID_JSON" }, { status: 502 }); }
   } catch (error) {
     console.error("Analyze route error", error);
     return NextResponse.json({ error: "ANALYZE_FAILED" }, { status: 500 });
   }
 }
-
